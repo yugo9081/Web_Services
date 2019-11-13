@@ -9,7 +9,7 @@
     <!-- Bootstrap core CSS -->
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
 	<style>
-		#thermometer_inner { width: 95%; height: 20%; margin:2.5%; background: red; position:absolute; bottom:0;}
+		#thermometer_inner { width: 95%; height: 20%; margin:2.5%; background: grey; position:absolute; bottom:0;}
 		#thermometer_outer {height:400px; position:relative;}
 		#temp_today { color:white; text-align:center; position:relative; top:50%; }
 	</style>
@@ -19,6 +19,23 @@
 		<br>
 		<h1 style="text-align:center">Weather Forecast</h1>
 		<hr>
+    <div class="row">
+      <h2 style="text-align:center">Check the Weather</h1>
+      <form method="get">
+          <fieldset>
+              <ul>
+                <label for="latitude">Latitude: </label>
+                <input type="text" id="latitude" placeholder="e.g. 34.134213" required>
+                <br>
+                <label for="longitude">Longitude: </label>
+                <input type="text" id="longitude" placeholder="e.g. -45.1234214" required>
+              </ul>
+          </fieldset>
+
+          <button type="button" id= "buttons">Submit</button>
+      </form>
+    </div>
+    <hr>
 		<div class="row">
 			<div class="col-4">
 				<div class="card" >
@@ -63,9 +80,13 @@
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
-	<script>
-		$(document).ready(function() {
-			var url ='https://api.darksky.net/forecast/cd35013f7f424b34c0033693c00e09fb/37.8267,-122.4233'; //Place your DarkSky API Call Here
+  <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBTpP4KsV0YoPWFvT5uz9mQGT1SZL6JbsA&libraries=places,geometry"></script> -->
+  <script>
+		$('#buttons').click(function() {
+      var lat = document.getElementById("latitude").value;
+      var long = document.getElementById("longitude").value;
+      var total = lat+','+long;
+      var url ='https://api.darksky.net/forecast/cd35013f7f424b34c0033693c00e09fb/'+total; //Place your DarkSky API Call Here
 			$.ajax({url:url, dataType:"jsonp"}).then(function(data) {
         console.log(data);
         document.getElementById("image_today").src = "img/"+data.currently.icon+".png";
@@ -74,9 +95,18 @@
         console.log(data.currently.temperature);
         document.getElementById("thermometer_inner").style.height = "" + data.currently.temperature+"%";
         document.getElementById("precip_today").innerHTML = data.currently.precipProbability+"%";
-        document.getElementById("humidity_today").innerHTML = data.currently.humidity*100+"%";
+        document.getElementById("humidity_today").innerHTML = (data.currently.humidity*100).toFixed(2)+"%";
         document.getElementById("wind_today").innerHTML = data.currently.windSpeed;
         document.getElementById("summary_today").innerHTML = data.currently.summary;
+
+        if(data.currently.temperature > 85){
+          document.getElementById("thermometer_inner").style.background = '#FF0000';
+        }
+        else if (data.currently.temperature < 65){
+          document.getElementById("thermometer_inner").style.background = '#0000FF';
+        }
+
+
 				/*
 					Read the current weather information from the data point values [https://darksky.net/dev/docs#data-point] to
 					update the webpage for today's weather:
@@ -154,9 +184,11 @@
           document.getElementById("6_day_forecast").appendChild(content);
         }
 
-        })
+      })
 
 		})
+
  	</script>
+
 </body>
 </html>
